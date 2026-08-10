@@ -24,11 +24,11 @@ const timeToMinutes = (time) => {
 
 router.get("/professors", async (req, res) => {
   try {
-    const professors = await User.find({ role: "PROFESSOR" }, "username fullName subjects");
-    if (!professors.length) {
-      return res.status(404).json({ message: "No professors found" });
-    }
-    console.log("Professors fetched:", professors);
+    const professors = await User.find(
+      { role: { $regex: /^professor$/i } },
+      "user_id username fullName subjects role"
+    ).sort({ user_id: 1, username: 1 });
+    console.log("Professors fetched count:", professors.length);
     res.json(professors);
   } catch (error) {
     console.error("Error fetching professors:", error);
@@ -69,7 +69,7 @@ router.post("/assign", async (req, res) => {
       return res.status(400).json({ error: `Invalid group number: ${groupNo}` });
     }
 
-    const professorData = await User.findOne({ username: professor });
+    const professorData = await User.findOne({ username: { $regex: new RegExp(`^${professor.trim()}$`, "i") } });
     if (!professorData) {
       return res.status(404).json({ error: `Professor not found: ${professor}` });
     }

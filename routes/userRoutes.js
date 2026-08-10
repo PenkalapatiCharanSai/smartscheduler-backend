@@ -9,8 +9,8 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // Check if user exists in DB
-        const user = await User.findOne({ username });
+        // Check if user exists in DB (case-insensitive)
+        const user = await User.findOne({ username: { $regex: new RegExp(`^${username.trim()}$`, "i") } });
         if (!user) {
             return res.status(401).json({ message: "Invalid username or password!" });
         }

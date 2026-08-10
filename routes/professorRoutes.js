@@ -12,7 +12,7 @@ router.get("/professor-schedule/:username", async (req, res) => {
     });
 
     if (!schedules || schedules.length === 0) {
-      return res.status(404).json({ message: "No schedules found for this professor." });
+      return res.json([]);
     }
 
     res.json(schedules);
